@@ -28,7 +28,7 @@ jobs:
 
       - run:
           name: Test
-          command: tox -e py27
+          command: tox
 
       - save_cache:
           name: "Saving tox cache"
