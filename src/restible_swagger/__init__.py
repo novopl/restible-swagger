@@ -22,4 +22,4 @@ from .decorators import responses
 from .logic import extract_api_spec
 from .util import RESPONSE_401
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
