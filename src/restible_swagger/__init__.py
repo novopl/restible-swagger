@@ -21,5 +21,7 @@ from .decorators import response
 from .decorators import responses
 from .logic import extract_api_spec
 from .util import RESPONSE_401
+from .util import RESPONSE_404
+from .util import RESPONSE_500
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'

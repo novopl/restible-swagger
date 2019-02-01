@@ -17,12 +17,7 @@
 from __future__ import absolute_import, unicode_literals
 
 # 3rd party imports
-import pygments
-import pygments.lexers
-import pygments.formatters
 import yaml
-from pygments.lexers.data import YamlLexer
-from pygments.formatters.terminal256 import Terminal256Formatter
 
 
 RESPONSE_401 = {
@@ -33,6 +28,34 @@ RESPONSE_401 = {
             "detail": {
                 "type": "string",
                 "example": "Login required",
+            }
+        }
+    }
+}
+
+
+RESPONSE_404 = {
+    "description": "Not Found",
+    "schema": {
+        "type": "object",
+        "properties": {
+            "detail": {
+                "type": "string",
+                "example": "Not Found",
+            }
+        }
+    }
+}
+
+
+RESPONSE_500 = {
+    "description": "Server Error",
+    "schema": {
+        "type": "object",
+        "properties": {
+            "detail": {
+                "type": "string",
+                "example": "Server Error",
             }
         }
     }
@@ -51,16 +74,6 @@ def make_name(*words):
 def yaml_dumps(data):
     """ Dump data as a YAML string. """
     return yaml.safe_dump(data, default_flow_style=False)
-
-
-def yaml_render(data):
-    """ Render data as YAML with shell colors syntax highlighting"""
-    yaml_str = yaml_dumps(data)
-    print(pygments.highlight(
-        yaml_str,
-        YamlLexer(),
-        Terminal256Formatter()
-    ))
 
 
 def yaml_write(data, path):

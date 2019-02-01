@@ -24,15 +24,15 @@ jobs:
 
       - restore_cache:
           name: "Restoring tox cache"
-          key: tox-rev1-{{ checksum "setup.py" }}-{{ checksum "ops/devrequirements.txt" }}
+          key: tox-rev2-{{ checksum "setup.py" }}-{{ checksum "ops/devrequirements.txt" }}
 
       - run:
           name: Test
-          command: tox -e py27
+          command: tox
 
       - save_cache:
           name: "Saving tox cache"
-          key: tox-rev1-{{ checksum "setup.py" }}-{{ checksum "ops/devrequirements.txt" }}
+          key: tox-rev2-{{ checksum "setup.py" }}-{{ checksum "ops/devrequirements.txt" }}
           paths:
           - .tox
 
