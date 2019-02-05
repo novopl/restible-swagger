@@ -17,10 +17,11 @@
 from __future__ import absolute_import, unicode_literals
 
 # stdlib imports
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Type
 
 # 3rd party imports
 import attr
+from restible import RestResource
 
 # local imports
 from .endpoint import EndpointBuilder
@@ -52,11 +53,11 @@ class Route(object):
 
     @property
     def res_cls(self):
-        # type: () -> RestResource
+        # type: () -> Type[RestResource]
         """ Return the resource class instance associated with this route. """
         if self._res_cls is None:
             mod_name, cls_name = self.resource.rsplit('.', 1)
-            mod = __import__(mod_name, fromlist=[cls_name])
+            mod = __import__(mod_name, fromlist=[str(cls_name)])
             self._res_cls = getattr(mod, cls_name)
 
         return self._res_cls
@@ -98,4 +99,5 @@ class Route(object):
         return paths
 
 
-del Any, Dict
+# Used only in type hint comments
+del Any, Dict, Type, RestResource
