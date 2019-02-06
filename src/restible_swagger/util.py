@@ -34,6 +34,20 @@ RESPONSE_401 = {
 }
 
 
+RESPONSE_403 = {
+    "description": "Access Denied",
+    "schema": {
+        "type": "object",
+        "properties": {
+            "detail": {
+                "type": "string",
+                "example": "Access Denied",
+            }
+        }
+    }
+}
+
+
 RESPONSE_404 = {
     "description": "Not Found",
     "schema": {
