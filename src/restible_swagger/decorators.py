@@ -42,7 +42,7 @@ def response(status, response_def):
     return decorator
 
 
-def response_200(description):
+def response_200(description, array=False):
     """ A standard HTTP 200 response
 
     A quick helper to easily define a standard 200 response where the response
@@ -52,7 +52,7 @@ def response_200(description):
         responses = getattr(fn, '_api_responses', {})
         responses['200'] = {
             "description": description,
-            "schema": "__self__",
+            "schema": "__self_array__" if array else "__self__",
         }
         fn._api_responses = responses
         return fn
