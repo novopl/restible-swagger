@@ -20,6 +20,7 @@ from __future__ import absolute_import, unicode_literals
 import textwrap
 
 # 3rd party imports
+from restible import ModelResource
 from six import string_types
 
 # local imports
@@ -70,17 +71,20 @@ class EndpointBuilder(object):
     def generic_endpoint(self):
         """ Extract spec for all generic endpoints on the resource. """
         res_cls = self.route.res_cls
-        res_name = res_cls.name
-        name = util.make_name(res_cls.name)
-
-        create_summary, create_desc = _parse_docstring(res_cls.rest_create)
-        query_summary, query_desc = _parse_docstring(res_cls.rest_query)
-
         resource = res_cls()
+        res_name = res_cls.name
+        is_model_res = issubclass(res_cls, ModelResource)
+        name = util.make_name(res_cls.name)
         endpoints = {}
+        res_methods = {
+            'create': 'create_item' if is_model_res else 'rest_create',
+            'query': 'query_items' if is_model_res else 'rest_query',
+        }
 
         if resource.implements('query'):
-            responses = self._get_responses(res_cls.rest_query, res_cls.schema, {
+            res_method = getattr(res_cls, res_methods['query'])
+            query_summary, query_desc = _parse_docstring(res_method)
+            responses = self._get_responses(res_method, res_cls.schema, {
                 "200": {
                     "description": "A list of {}s".format(res_name),
                     "schema": "__self_array__",
@@ -96,7 +100,9 @@ class EndpointBuilder(object):
             }
 
         if resource.implements('create'):
-            responses = self._get_responses(res_cls.rest_create, res_cls.schema, {
+            res_method = getattr(res_cls, res_methods['create'])
+            create_summary, create_desc = _parse_docstring(res_method)
+            responses = self._get_responses(res_method, res_cls.schema, {
                 "201": {
                     "description": "{} successfully created".format(name),
                     "schema": '__self__',
@@ -124,15 +130,21 @@ class EndpointBuilder(object):
     def detail_endpoint(self):
         """ Extract spec for all detail endpoints on the resource. """
         res_cls = self.route.res_cls
-        res_name = res_cls.name
-        name = util.make_name(res_cls.name)
-
         resource = res_cls()
+        res_name = res_cls.name
+        is_model_res = issubclass(res_cls, ModelResource)
+        name = util.make_name(res_cls.name)
         endpoints = {"parameters": [res_cls.param_schema]}
+        res_methods = {
+            'get': 'get_item' if is_model_res else 'rest_get',
+            'update': 'update_item' if is_model_res else 'rest_update',
+            'delete': 'delete_item' if is_model_res else 'rest_delete',
+        }
 
         if resource.implements('get'):
-            get_summary, get_desc = _parse_docstring(res_cls.rest_get)
-            responses = self._get_responses(res_cls.rest_get, res_cls.schema, {
+            res_method = getattr(res_cls, res_methods['get'])
+            get_summary, get_desc = _parse_docstring(res_method)
+            responses = self._get_responses(res_method, res_cls.schema, {
                 "200": {
                     "description": "A list of {}s".format(res_name),
                     "schema": '__self_array__',
@@ -147,8 +159,9 @@ class EndpointBuilder(object):
             }
 
         if resource.implements('update'):
-            put_summary, put_desc = _parse_docstring(res_cls.rest_update)
-            responses = self._get_responses(res_cls.rest_update, res_cls.schema, {
+            res_method = getattr(res_cls, res_methods['update'])
+            put_summary, put_desc = _parse_docstring(res_method)
+            responses = self._get_responses(res_method, res_cls.schema, {
                 "200": {
                     "description": "An updated {}".format(res_name),
                     "schema": '__self__',
@@ -171,8 +184,9 @@ class EndpointBuilder(object):
             }
 
         if resource.implements('delete'):
-            del_summary, del_desc = _parse_docstring(res_cls.rest_delete)
-            responses = self._get_responses(res_cls.rest_delete, res_cls.schema, {
+            res_method = getattr(res_cls, res_methods['delete'])
+            del_summary, del_desc = _parse_docstring(res_method)
+            responses = self._get_responses(res_method, res_cls.schema, {
                 "200": {"description": "Successfully deleted"},
                 "401": util.RESPONSE_401
             })
