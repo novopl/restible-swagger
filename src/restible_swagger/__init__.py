@@ -18,10 +18,15 @@ from __future__ import absolute_import
 
 # package interface
 from .decorators import response
+from .decorators import response_200
+from .decorators import response_201
+from .decorators import response_401
+from .decorators import response_403
+from .decorators import response_404
 from .decorators import responses
 from .logic import extract_api_spec
 from .util import RESPONSE_401
 from .util import RESPONSE_404
 from .util import RESPONSE_500
 
-__version__ = '0.1'
+__version__ = '0.1.1'
