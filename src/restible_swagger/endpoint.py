@@ -221,6 +221,9 @@ class EndpointBuilder(object):
 
 
 def _parse_docstring(obj):
+    if obj.__doc__ is None:
+        return None, None
+
     docstring = obj.__doc__.strip()
     parts = docstring.split('\n\n', 1)
     summary = parts[0]
