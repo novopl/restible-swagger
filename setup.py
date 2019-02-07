@@ -49,7 +49,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages('src', exclude=('test', 'test.*')),
     install_requires=[
-        'restible>=0.8.0',
+        'restible>=0.8.2',
         'six>=1.0.0',
 
     ],

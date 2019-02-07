@@ -37,7 +37,7 @@ class Route(object):
     """
     url = attr.ib(type=str)
     resource = attr.ib(type=str)
-    id_param = attr.ib(type=str)
+    route_param = attr.ib(type=str)
     actions = attr.ib(type=List[int])
     _res_cls = attr.ib(type=type, default=None)
 
@@ -47,7 +47,7 @@ class Route(object):
         return Route(
             url=url,
             resource=route_info['resource'],
-            id_param=route_info['id_param'],
+            route_param=route_info['route_param'],
             actions=route_info.get('actions', []),
         )
 

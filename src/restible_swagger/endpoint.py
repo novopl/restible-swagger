@@ -134,7 +134,7 @@ class EndpointBuilder(object):
         res_name = res_cls.name
         is_model_res = issubclass(res_cls, ModelResource)
         name = util.make_name(res_cls.name)
-        endpoints = {"parameters": [res_cls.param_schema]}
+        endpoints = {"parameters": [res_cls.route_param]}
         res_methods = {
             'get': 'get_item' if is_model_res else 'rest_get',
             'update': 'update_item' if is_model_res else 'rest_update',
