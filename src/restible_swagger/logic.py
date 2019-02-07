@@ -33,8 +33,8 @@ def extract_api_spec(config, out_dir):
 
     for url, route_info in config.items():
         route = Route.load(url, route_info)
-        spec = route.build_spec()
+        route_spec = route.build_spec()
         res_file = os.path.join(out_dir, route.res_cls.name + '.yaml')
 
         print("-- \x1b[32mWriting \x1b[34m{}\x1b[0m".format(res_file))
-        util.yaml_write(spec, res_file)
+        util.yaml_write(route_spec, res_file)
