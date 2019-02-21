@@ -21,7 +21,7 @@ import textwrap
 
 # 3rd party imports
 from restible import ModelResource
-from six import string_types
+from six import string_types        # pylint: disable=wrong-import-order
 
 # local imports
 from . import util
@@ -134,7 +134,7 @@ class EndpointBuilder(object):
         res_name = res_cls.name
         is_model_res = issubclass(res_cls, ModelResource)
         name = util.make_name(res_cls.name)
-        endpoints = {"parameters": [res_cls.route_param]}
+        endpoints = {"parameters": res_cls.route_params}
         res_methods = {
             'get': 'get_item' if is_model_res else 'rest_get',
             'update': 'update_item' if is_model_res else 'rest_update',
