@@ -24,9 +24,10 @@ from .decorators import response_401
 from .decorators import response_403
 from .decorators import response_404
 from .decorators import responses
+from .decorators import route_params
 from .logic import extract_api_spec
 from .util import RESPONSE_401
 from .util import RESPONSE_404
 from .util import RESPONSE_500
 
-__version__ = '0.3'
+__version__ = '0.3.1'

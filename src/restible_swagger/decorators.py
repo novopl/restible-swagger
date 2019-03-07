@@ -16,14 +16,57 @@
 """ restible-swagger decorators. """
 from __future__ import absolute_import, unicode_literals
 
+# stdlib imports
+from types import FunctionType
+from typing import Any, Dict, List
 
+# 3rd party imports
+import attr
+
+# local imports
 from . import util
+
+
+@attr.s
+class RouteMeta(object):
+    """ A helper class to store all the metadata about a given route.
+
+    """
+    responses = attr.ib(type=Dict[int, Any], default={})
+    route_params = attr.ib(type=List[Any], default=[])
+
+    PARAM_NAME = '_restible_route_meta'
+
+    def set_response(self, status_code, response_def):
+        # type: (int, Dict[Text, Any]) -> None
+        """ Set route response for the given HTTP status code. """
+        self.responses[status_code] = response_def
+
+    @classmethod
+    def load(cls, fn):
+        # type: (FunctionType) -> RouteMeta
+        """ Load (or create) metadata for the given route.
+
+        If the metadata is not yet saved on the handler, a new instance of
+        `RouteMeta` will be created. You will need to save it manually in order
+        for it to be persisted on the handler.
+        """
+        meta = getattr(fn, cls.PARAM_NAME, RouteMeta())
+        meta.fn = fn
+        return meta
+
+    def save(self):
+        # type: () -> None
+        """ Save route metadata into the handler it was loaded for. """
+        setattr(self.fn, self.PARAM_NAME, self)
 
 
 def responses(resp_def):
     """ Define responses for the given handlers. """
     def decorator(fn):  # pylint: disable=missing-docstring
-        fn._api_responses = resp_def
+        meta = RouteMeta.load(fn)
+        meta.responses = resp_def
+        meta.save()
         return fn
     return decorator
 
@@ -35,9 +78,9 @@ def response(status, response_def):
     decorator multiple times.
     """
     def decorator(fn):  # pylint: disable=missing-docstring
-        responses = getattr(fn, '_api_responses', {})
-        responses[status] = response_def
-        fn._api_responses = responses
+        meta = RouteMeta.load(fn)
+        meta.set_response(status, response_def)
+        meta.save()
         return fn
     return decorator
 
@@ -48,15 +91,10 @@ def response_200(description, array=False):
     A quick helper to easily define a standard 200 response where the response
     schema matches the main resource schema for any given restible resource.
     """
-    def decorator(fn):  # pylint: disable=missing-docstring
-        responses = getattr(fn, '_api_responses', {})
-        responses['200'] = {
-            "description": description,
-            "schema": "__self_array__" if array else "__self__",
-        }
-        fn._api_responses = responses
-        return fn
-    return decorator
+    return response(200, {
+        "description": description,
+        "schema": "__self_array__" if array else "__self__",
+    })
 
 
 def response_201(description):
@@ -65,15 +103,10 @@ def response_201(description):
     A quick helper to easily define a standard 201 response where the response
     schema matches the main resource schema for any given restible resource.
     """
-    def decorator(fn):  # pylint: disable=missing-docstring
-        responses = getattr(fn, '_api_responses', {})
-        responses['201'] = {
-            "description": description,
-            "schema": "__self__",
-        }
-        fn._api_responses = responses
-        return fn
-    return decorator
+    return response(201, {
+        "description": description,
+        "schema": "__self__",
+    })
 
 
 def response_401():
@@ -83,12 +116,7 @@ def response_401():
     schema you'll have to build those manually. Otherwise you can use this
     little helper.
     """
-    def decorator(fn):  # pylint: disable=missing-docstring
-        responses = getattr(fn, '_api_responses', {})
-        responses['401'] = util.RESPONSE_401
-        fn._api_responses = responses
-        return fn
-    return decorator
+    return response(401, util.RESPONSE_401)
 
 
 def response_403():
@@ -98,12 +126,7 @@ def response_403():
     schema you'll have to build those manually. Otherwise you can use this
     little helper.
     """
-    def decorator(fn):  # pylint: disable=missing-docstring
-        responses = getattr(fn, '_api_responses', {})
-        responses['401'] = util.RESPONSE_401
-        fn._api_responses = responses
-        return fn
-    return decorator
+    return response(403, util.RESPONSE_403)
 
 
 def response_404():
@@ -113,9 +136,23 @@ def response_404():
     schema you'll have to build those manually. Otherwise you can use this
     little helper.
     """
+    return response(404, util.RESPONSE_404)
+
+
+def route_params(params_def):
+    """ Define route parameters.
+
+    This allows you to define route params for any route. This allows to
+    document the API at the finest level of detail.
+    """
     def decorator(fn):  # pylint: disable=missing-docstring
-        responses = getattr(fn, '_api_responses', {})
-        responses['404'] = util.RESPONSE_404
-        fn._api_responses = responses
+        meta = RouteMeta.load(fn)
+        meta.route_params = params_def
+        meta.save()
         return fn
+
     return decorator
+
+
+# Used only in type hint comments
+del FunctionType
