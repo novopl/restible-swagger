@@ -86,13 +86,26 @@ class Route(object):
             meta = api_action.get_meta(action)
             (generic if meta.generic else detail).append(action)
 
-        actions_by_name = {}
+        detail_by_name = {}
         for action in detail:
             meta = api_action.get_meta(action)
-            actions = actions_by_name.setdefault(meta.name, [])
+            actions = detail_by_name.setdefault(meta.name, [])
             actions.append(action)
 
-        for name, actions in actions_by_name.items():
+        for name, actions in detail_by_name.items():
+            endp_name = '{res}-detail-{action}'.format(
+                res=self.res_cls.name,
+                action=name
+            )
+            paths[endp_name] = builder.actions_endpoint(actions)
+
+        generic_by_name = {}
+        for action in generic:
+            meta = api_action.get_meta(action)
+            actions = generic_by_name.setdefault(meta.name, [])
+            actions.append(action)
+
+        for name, actions in generic_by_name.items():
             endp_name = '{res}-{action}'.format(res=self.res_cls.name, action=name)
             paths[endp_name] = builder.actions_endpoint(actions)
 
