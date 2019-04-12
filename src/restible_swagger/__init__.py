@@ -20,6 +20,7 @@ from __future__ import absolute_import
 from .decorators import response
 from .decorators import response_200
 from .decorators import response_201
+from .decorators import response_204
 from .decorators import response_401
 from .decorators import response_403
 from .decorators import response_404
@@ -30,4 +31,4 @@ from .util import RESPONSE_401
 from .util import RESPONSE_404
 from .util import RESPONSE_500
 
-__version__ = '0.3.1'
+__version__ = '0.3.2'

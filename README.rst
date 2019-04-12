@@ -9,6 +9,7 @@ specification from the `restible <https://github.com/novopl/restible>`_ powered
 backend code.
 
 .. note::
+
     The CircleCI builds can be found
     `here <https://circleci.com/gh/novopl/restible-swagger>`_
 

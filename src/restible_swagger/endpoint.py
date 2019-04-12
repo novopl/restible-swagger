@@ -21,10 +21,11 @@ import textwrap
 
 # 3rd party imports
 from restible import ModelResource
-from six import string_types        # pylint: disable=wrong-import-order
+from six import iteritems, string_types     # pylint: disable=wrong-import-order
 
 # local imports
 from . import util
+from .decorators import RouteMeta
 
 
 class EndpointBuilder(object):
@@ -149,7 +150,8 @@ class EndpointBuilder(object):
                     "description": "A list of {}s".format(res_name),
                     "schema": '__self_array__',
                 },
-                "401": util.RESPONSE_401
+                "401": util.RESPONSE_401,
+                "404": util.RESPONSE_404
             })
             endpoints["get"] = {
                 "tags": [name],
@@ -166,7 +168,8 @@ class EndpointBuilder(object):
                     "description": "An updated {}".format(res_name),
                     "schema": '__self__',
                 },
-                "401": util.RESPONSE_401
+                "401": util.RESPONSE_401,
+                "404": util.RESPONSE_404
             })
             endpoints["put"] = {
                 "tags": [name],
@@ -188,7 +191,8 @@ class EndpointBuilder(object):
             del_summary, del_desc = _parse_docstring(res_method)
             responses = self._get_responses(res_method, res_cls.schema, {
                 "200": {"description": "Successfully deleted"},
-                "401": util.RESPONSE_401
+                "401": util.RESPONSE_401,
+                "404": util.RESPONSE_404
             })
             endpoints["delete"] = {
                 "tags": [name],
@@ -200,12 +204,10 @@ class EndpointBuilder(object):
         return endpoints
 
     def _get_responses(self, handler, self_schema, defaults=None):
-        if hasattr(handler, '_api_responses'):
-            responses = handler._api_responses
-        else:
-            responses = defaults or {}
+        route_meta = RouteMeta.load(handler)
+        responses = route_meta.responses or defaults or {}
 
-        for _, resp_spec in responses.items():
+        for _, resp_spec in iteritems(responses):
             schema = resp_spec.get('schema', None)
 
             if isinstance(schema, string_types):

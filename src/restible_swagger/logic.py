@@ -17,12 +17,17 @@
 from __future__ import absolute_import, unicode_literals
 
 # stdlib imports
+import json
 import os
 import os.path
+from logging import getLogger
 
 # 3rd party imports
 from . import util
 from .route import Route
+
+
+L = getLogger(__name__)
 
 
 def extract_api_spec(config, out_dir):
@@ -32,9 +37,16 @@ def extract_api_spec(config, out_dir):
         os.makedirs(out_dir)
 
     for url, route_info in config.items():
-        route = Route.load(url, route_info)
-        route_spec = route.build_spec()
-        res_file = os.path.join(out_dir, route.res_cls.name + '.yaml')
+        try:
+            route = Route.load(url, route_info)
+            route_spec = route.build_spec()
+            res_file = os.path.join(out_dir, route.res_cls.name + '.yaml')
 
-        print("-- \x1b[32mWriting \x1b[34m{}\x1b[0m".format(res_file))
-        util.yaml_write(route_spec, res_file)
+            print("-- \x1b[32mWriting \x1b[34m{}\x1b[0m".format(res_file))
+            util.yaml_write(route_spec, res_file)
+        except:
+            from traceback import print_exc
+            print_exc()
+            print("Failed to load route {} using {}".format(
+                url, json.dumps(route_info)
+            ))
