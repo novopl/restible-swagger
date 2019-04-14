@@ -32,4 +32,4 @@ from .util import RESPONSE_401
 from .util import RESPONSE_404
 from .util import RESPONSE_500
 
-__version__ = '0.3.2'
+__version__ = '0.3.3'
