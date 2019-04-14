@@ -120,27 +120,38 @@ def response_204(description=None):
     schema matches the main resource schema for any given restible resource.
     """
     description = description or "Item deleted"
-    return response(204, {"description": description})
+    return response(204, {
+        "description": description,
+        "schema": {"type": "null"}
+    })
 
 
-def response_401():
+def response_401(description=None):
     """ A standard HTTP 401 response
 
     A quick helper for defining 401 responses. If you're using a custom error
     schema you'll have to build those manually. Otherwise you can use this
     little helper.
     """
-    return response(401, util.RESPONSE_401)
+    resp_def = dict(util.RESPONSE_404)
+    if description is not None:
+        resp_def['description'] = description
+
+    return response(401, resp_def)
 
 
-def response_403():
+def response_403(description=None):
     """ A standard HTTP 403 response
 
     A quick helper for defining 403 responses. If you're using a custom error
     schema you'll have to build those manually. Otherwise you can use this
     little helper.
     """
-    return response(403, util.RESPONSE_403)
+    resp_def = dict(util.RESPONSE_404)
+    if description is not None:
+        resp_def['description'] = description
+
+    return response(403, resp_def)
 
 
 def response_404(description=None):
@@ -155,6 +166,19 @@ def response_404(description=None):
         resp_def['description'] = description
 
     return response(404, resp_def)
+
+
+def response_500(description=None):
+    """ A standard HTTP 500 response
+
+    A quick helper for defining 500 responses. If you're using a custom error
+    schema you'll have to build those manually. Otherwise you can use this
+    little helper.
+    """
+    resp_def = dict(util.RESPONSE_404)
+    if description is not None:
+        resp_def['description'] = description
+    return response(403, resp_def)
 
 
 def route_params(params_def):
